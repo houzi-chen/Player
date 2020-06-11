@@ -1,0 +1,332 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+ul {
+  list-style: none;
+}
+ul::-webkit-scrollbar,
+div::-webkit-scrollbar {
+  display: none;
+}
+.app {
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../images/bg.jpg");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+@keyframes circling {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.app .container {
+  width: 800px;
+  height: 550px;
+  margin: 0 auto;
+  padding-top: 10px;
+}
+.app .container .top {
+  background-color: #1eacda;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  padding: 0 20px;
+  align-items: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  position: relative;
+}
+.app .container .top .left {
+  flex: 1;
+}
+.app .container .top .right {
+  width: 230px;
+  height: 30px;
+  border-radius: 25px;
+}
+.app .container .top .right input {
+  width: 100%;
+  height: 100%;
+  background-image: url("../images/zoom.png");
+  background-repeat: no-repeat;
+  background-position: 190px center;
+  border-radius: 25px;
+  border: 0;
+  outline: none;
+  padding-left: 10px;
+  background-color: #83d1eb;
+}
+.app .container .top .dj {
+  width: 100px;
+  cursor: pointer;
+  margin-right: 80px;
+}
+.app .container .top .new {
+  width: 100px;
+  cursor: pointer;
+  margin-right: 50px;
+}
+.app .container .middle {
+  width: 100%;
+  height: 450px;
+  display: flex;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+.app .container .middle .mid-left {
+  width: 180px;
+  height: 400px;
+  position: relative;
+}
+.app .container .middle .mid-left span {
+  padding: 10px;
+}
+.app .container .middle .mid-left ul {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding: 5px;
+}
+.app .container .middle .mid-left ul li {
+  width: 100%;
+  height: 40px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.app .container .middle .mid-left ul li .left-img {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+  margin-left: -20px;
+  cursor: pointer;
+}
+.app .container .middle .mid-left ul li .text {
+  width: 120px;
+  height: 40px;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.app .container .middle .mid-left ul li .right-img {
+  width: 10px;
+  height: 10px;
+  background-image: url("../images/table.png");
+  background-repeat: no-repeat;
+  background-position: left -48px;
+  margin-right: -18px;
+  cursor: pointer;
+}
+.app .container .middle .mid-left ul li .hide {
+  display: none;
+}
+.app .container .middle .mid-left ul li:nth-child(odd) {
+  background-color: rgba(240, 240, 240, 0.3);
+}
+.app .container .middle .mid-left img.line {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.app .container .middle .mid-mid {
+  width: 400px;
+  position: relative;
+  overflow: hidden;
+}
+.app .container .middle .mid-mid img {
+  position: absolute;
+}
+.app .container .middle .mid-mid .play-bar {
+  left: 200px;
+  position: absolute;
+  z-index: 4;
+  transform: rotate(-25deg);
+  transform-origin: 12px 12px;
+  transition: all 0.5s;
+}
+.app .container .middle .mid-mid .play-bar-playing {
+  transform: rotate(0) !important;
+}
+.app .container .middle .mid-mid .cover {
+  width: 160px;
+  height: 160px;
+  top: 145px;
+  left: 50%;
+  border-radius: 50%;
+  transform: translateX(-31%);
+}
+.app .container .middle .mid-mid .autorotate {
+  animation-name: circling;
+  animation-duration: 5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.app .container .middle .mid-mid .disc {
+  top: 100px;
+  left: 100px;
+}
+.app .container .middle .mid-mid img.line {
+  right: 0;
+  top: 0;
+}
+.app .container .middle .mid-mid .lyric {
+  width: 100%;
+  height: 80px;
+  position: absolute;
+  top: 355px;
+  left: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.app .container .middle .mid-mid .lyric .content {
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  transition: all 0.4s;
+  margin: 10px;
+}
+.app .container .middle .mid-mid .lyric .active {
+  color: firebrick;
+  font-size: 16px;
+}
+.app .container .middle .mid-mid .fulllyric {
+  height: 100%;
+  top: 10px;
+}
+.app .container .middle .mid-mid-dj {
+  width: 400px;
+  position: relative;
+  overflow: hidden;
+  height: 450px;
+}
+.app .container .middle .mid-mid-dj .dj-content {
+  width: 100%;
+  height: 450px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+}
+.app .container .middle .mid-mid-dj .dj-content .dj-item {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 10px;
+  margin-bottom: 50px;
+}
+.app .container .middle .mid-mid-dj .dj-content .dj-item .pic {
+  width: 80px;
+  border-radius: 50%;
+  margin-bottom: 5px;
+}
+.app .container .middle .mid-mid-dj .dj-content .dj-item .name {
+  width: 100%;
+  text-align: center;
+}
+.app .container .middle .mid-mid-dj .line {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.app .container .middle img.line {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.app .container .middle .mid-right {
+  padding: 10px;
+  width: 220px;
+  height: 100%;
+}
+.app .container .middle .mid-right ul {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding: 5px;
+}
+.app .container .middle .mid-right ul li {
+  width: 100%;
+  margin-bottom: 5px;
+  font-size: 12px;
+  margin-bottom: 20px;
+}
+.app .container .middle .mid-right ul li img {
+  width: 40px;
+  border-radius: 50%;
+  margin-top: 4px;
+}
+.app .container .middle .mid-right ul li .username {
+  margin-left: 50px;
+  font-weight: bold;
+  font-size: 12px;
+  display: block;
+  margin-top: -42px;
+}
+.app .container .middle .mid-right ul li .text {
+  margin-left: 50px;
+  margin-top: 5px;
+  color: #666;
+  line-height: 18px;
+  display: block;
+}
+.app .container .bottom-audio {
+  width: 100%;
+  height: 40px;
+  background-color: #f1f3f4;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  margin-top: -10px;
+}
+.app .container .bottom-audio audio {
+  width: 100%;
+  height: 40px;
+  outline: none;
+}
+.app .container .bottom-video {
+  width: 100%;
+  height: 100%;
+}
+.app .container .bottom-video video {
+  width: 800px;
+  height: 550px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 5;
+  outline: none;
+}
+.app .container .bottom-video .close {
+  position: fixed;
+  top: 10%;
+  right: 10%;
+  z-index: 5;
+  font-size: 30px;
+  color: white;
+  cursor: pointer;
+}
+.app .container .bottom-video .mask {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #000000;
+  z-index: 4;
+}

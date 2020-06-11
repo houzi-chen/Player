@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>音乐播放器</title>
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+<body>
+    <div class="app">
+        <div class="container">
+            <div class="top">
+                <div class="left">
+                    <img src="./images/player_title.png" alt="">
+                </div>
+                <div class="dj" @click="showDj">热门电台</div>
+                <div class="new"  @click="showNewList">主播新人榜</div>
+                <div class="right">
+                    <input type="text" v-model="searchInfo" @keyup.enter="search">
+                </div>
+            </div>
+            <div class="middle">
+                <!-- 中间部分左边歌曲列表 -->
+                <div class="mid-left">
+                    <span>..</span>
+                    <ul>
+                        <li v-for="item, index in songsList">
+                            <img src="./images/play.png" class="left-img" @click="playMusic(item.id)">
+                            <span class="text">{{item.name}}</span>
+                            <span :class="['right-img', {hide: !item.mvid}]"  @click="playMv(item.mvid)"></span>
+                        </li>
+                    </ul>
+                    <img src="./images/line.png" class="line">
+                </div>
+                <!-- 中间部分显示碟片 -->
+                <div class="mid-mid" v-if="!isShowDj && !isNewList">
+                    <div v-if="!isShowFullLyric">
+                        <img src="./images/player_bar.png" alt="" :class="['play-bar', {'play-bar-playing': isPlayMusic}]">
+                        <img :src="coverUrl==='' ? './images/zyx.jpg' : coverUrl" alt="" class="cover">
+                        <img src="./images/disc.png" alt=""  :class="['disc', {autorotate: isPlayMusic}]">
+                    </div>
+                    <img src="./images/line.png" class="line">
+                    <div ref="lyricDiv" :class="['lyric', {fulllyric: isShowFullLyric}]" @click="showFullLyric">
+                        <div v-for="item, index in lyricArr" :key="index" :class="['content', {active: index === iNow}]" @click="jump(index)">
+                            {{item.lyric}}
+                        </div>
+                    </div>
+                </div>
+                <!-- 中间部分显示热门电台 -->
+                <div class="mid-mid-dj"  v-if="isShowDj">
+                    <ul class="dj-content">
+                        <li class="dj-item" v-for="item, index in djRadios" :key="index">
+                            <img :src="item.picUrl" alt="" class="pic">
+                            <div class="name">{{item.name}}</div>
+                        </li>
+                    </ul>
+                    <img src="./images/line.png" class="line">
+                </div>
+                <!-- 中间部分显示新人主播榜 -->
+                <div class="mid-mid-dj"  v-if="isNewList">
+                    <ul class="dj-content">
+                        <li class="dj-item" v-for="item, index in newList" :key="index">
+                            <img :src="item.avatarUrl" alt="" class="pic">
+                            <div class="name">{{item.nickName}}</div>
+                        </li>
+                    </ul>
+                    <img src="./images/line.png" class="line">
+                </div>
+                <!-- 右边显示留言 -->
+                <div class="mid-right">
+                    <span>热门留言</span>
+                    <ul v-if="commentsList">
+                        <li v-for="item, index in commentsList" :key="index">
+                            <img :src="item.user.avatarUrl" alt="">
+                            <span class="username">{{item.user.nickname}}</span>
+                            <span class="text">{{item.content}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 底部显示音频 -->
+            <div class="bottom-audio">
+                <audio ref="audio" @play=play @pause=pause @timeupdate="timeUpdate" :src="musicUrl" controls autoplay loop></audio>
+            </div>
+            <!-- 视频标签 -->
+            <div class="bottom-video" v-show="mvUrl">
+                <video ref="video" :src="mvUrl" controls autoplay loop></video>
+                <div class="close" @click="closeMv">X</div>
+                <div class="mask"></div>
+            </div>
+        </div>
+    </div>
+    <script src="./js/vue.js"></script>
+    <script src="./js/axios.js"></script>
+    <script src="./js/index.js"></script>
+    <script>
+        axios.defaults.baseURL = 'https://apimusic.linweiqin.com/';
+        let vm = new Vue({
+            el: ".app",
+            data: {
+                // 默认搜索内容
+                keywords: "张艺兴",
+                // 搜索框的内容
+                searchInfo: "",
+                // 歌曲列表
+                songsList: [],
+                // 热门留言列表
+                commentsList: [],
+                // 所选中音乐的链接
+                musicUrl: "",
+                // 歌曲封面
+                coverUrl: "",
+                // 是否正在播放音乐
+                isPlayMusic: false,
+                // mv地址
+                mvUrl: "",
+                // 热门电台数据
+                djRadios: [],
+                // 是否展示热门电台
+                isShowDj: false,
+                // 新人主播版数据
+                newList: [],
+                // 是否显示
+                isNewList: false,
+                // 歌词列表
+                lyricArr: [],
+                // 是否全屏显示歌词
+                isShowFullLyric: false,
+                // 高亮哪句歌词
+                iNow:0,
+                // 音频播放时长
+                currentTime: 0
+            },
+            methods: {
+                // 搜索方法
+                search() {
+                    if(!this.searchInfo.trim()) {
+                        return 
+                    }
+                    axios.get("/search?keywords=" + this.searchInfo).then(response => {
+                        this.songsList = response.data.result.songs
+                    })
+                    // console.log(this.commentsList)
+                },
+                // 点击每首歌曲
+                playMusic(index) {
+                    this.isShowDj = false;
+                    this.isNewList = false;
+                    // 获取歌曲链接
+                    axios.get('/song/url?id=' + index).then(response => {
+                        this.musicUrl = response.data.data[0].url
+                    })
+                    // 获取歌曲对应的热门留言
+                    axios.get('/comment/hot?type=0&id=' + index).then(response => {
+                        this.commentsList = response.data.hotComments
+                    })
+                    // 获取歌曲封面
+                    axios.get("/song/detail?ids=" + index).then(response => {
+                        this.coverUrl = response.data.songs[0].al.picUrl
+                    })
+                    // 获取歌曲歌词
+                    axios.get("/lyric?id=" + index).then(res => {
+                        // 先清空歌词
+                        this.lyricArr = []
+                        let arr = res.data.lrc.lyric.split(/[\n]/)
+                        arr.map((e, i) => {
+                            // 处理时间
+                            let minute = Number(e.slice(1, e.indexOf(":")))
+                            let second = Number(e.slice(e.indexOf(":") + 1, e.indexOf("]")))
+                            if(minute !== 0) {
+                                minute *= 60
+                            }
+                            // 转换为秒的单位
+                            let time = minute + second
+                            let obj = {}
+                            // 往obj里添加time属性存放每行歌词所对应的时间
+                            obj.time = time
+                            // 往obj里添加lyric属性存放歌词
+                            obj.lyric = e.slice(e.indexOf("]") + 1)
+                            this.lyricArr.push(obj)
+                        })
+                    })
+                    this.$refs.lyricDiv.scrollTop = 0
+                },
+                play() {
+                    this.isPlayMusic = true
+                },
+                pause() {
+                    this.isPlayMusic = false
+                },
+                playMv(index) {
+                    axios.get('./mv/url?id=' + index).then(response => {
+                        this.mvUrl = response.data.data.url
+                    })
+                    this.$refs.audio.pause()
+                },
+                closeMv() {
+                    this.mvUrl = ""
+                },
+                getDjRadios() {
+                    axios.get("/dj/hot").then(res => {
+                        this.djRadios = res.data.djRadios
+                    })
+                },
+                showDj() {
+                    this.isShowDj = true;
+                    this.isNewList = false;
+                    axios.get("/dj/hot").then(res => {
+                        this.djRadios = res.data.djRadios
+                    })
+                },
+                showNewList() {
+                    this.isNewList = true
+                    this.isShowDj = false;
+                    axios.get("/dj/toplist/newcomer").then(res => {
+                        this.newList = res.data.data.list
+                    })
+                },
+                showFullLyric() {
+                    this.isShowFullLyric = true;
+                },
+                jump(index) {
+                    // 切换歌词进度
+                    this.$refs.audio.currentTime = this.lyricArr[index].time
+                    this.iNow = index
+                },
+                timeUpdate() {
+                   this.currentTime = this.$refs.audio.currentTime
+                   this.lyricArr.map((e, i) => {
+                        if(Number.parseInt(this.currentTime) === Number.parseInt(e.time)) {
+                            this.iNow = i
+                        }
+                    })
+                }
+            },
+            watch: {
+                iNow: function(newvalue, oldvalue) {
+                    this.$refs.lyricDiv.scrollTop += 17
+                    // if(newvalue > oldvalue) {
+                    //         this.$refs.lyricDiv.scrollTop = (this.currentTime / this.$refs.audio.duration * 800)  
+                    // } else {
+                    //     this.$refs.lyricDiv.scrollTop = (this.currentTime / this.$refs.audio.duration * 800)
+                    // }
+                    // console.log(this.$refs.lyricDiv.scrollTop)
+                },
+            },
+            mounted() {
+                axios.get("./search", {
+                    params: {
+                        keywords: this.keywords
+                    }
+                }).then(res => {
+                    this.songsList = res.data.result.songs
+                })
+            }
+        })
+    </script>
+</body>
+</html>

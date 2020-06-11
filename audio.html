@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <audio  controls src="http://m801.music.126.net/20200610144456/cde2e11024bcdffe0a7da4ea092b2aa8/jdymusic/obj/w5zDlMODwrDDiGjCn8Ky/2369407091/c106/a1ce/0795/da099f8f27ad827bf0d4ee75d1b30821.mp3"></audio>
+    <script>
+        let oAudio = document.getElementsByTagName("audio")[0]
+        oAudio.addEventListener("durationchange", function(e) {
+            console.log(oAudio.currentTime)
+        })
+        oAudio.pause(function() {
+            console.log(oAudio.currentTime)
+        })
+        // console.log(document.getElementsByTagName("audio")[0].duration)
+    </script>
+</body>
+</html>
